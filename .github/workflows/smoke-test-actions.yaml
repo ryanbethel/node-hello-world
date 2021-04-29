@@ -52,11 +52,11 @@ jobs:
 
             - name: Hydrate
               run: npx arc hydrate
-              env:
-                  AWS_ACCESS_KEY_ID: "foo"
-                  AWS_SECRET_ACCESS_KEY: "bar"
-                  CI: true
-                  ARC_MAX_NPM: 10
+              # env:
+              #     AWS_ACCESS_KEY_ID: "foo"
+              #     AWS_SECRET_ACCESS_KEY: "bar"
+              #     CI: true
+              #     ARC_MAX_NPM: 10
 
             - name: Run Sandbox Tests
               run: QUIET=1 npx tape ./.github/workflows/smoke-tests/sandbox/**-test.js | npx tap-spec
