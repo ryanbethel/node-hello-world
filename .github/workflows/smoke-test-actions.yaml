@@ -11,17 +11,16 @@ jobs:
         strategy:
             matrix:
                 node-version: [10.x]
-                
-         steps:
-          - name: Notify
-            uses: homoluctus/slatify@master
-              if: always()
-              with:
-                  type: ${{ job.status }}
-                  job_name: "*Deploy*"
-                  url: ${{ secrets.SLACK_WEBHOOK }}
-                  commit: true
-                  token: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+        - name: Notify
+          uses: homoluctus/slatify@master
+          if: always()
+          with:
+                type: ${{ job.status }}
+                job_name: "*Deploy*"
+                url: ${{ secrets.SLACK_WEBHOOK }}
+                commit: true
+                token: ${{ secrets.GITHUB_TOKEN }}
 
 
     #     # Go
