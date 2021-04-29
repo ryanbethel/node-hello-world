@@ -44,6 +44,9 @@ jobs:
             - name: Install
               run: npm install
 
+            - name: Install Architect
+              run: npm i @architect/architect
+
             - name: Hydrate
               run: npx arc hydrate
               env:
@@ -63,7 +66,7 @@ jobs:
               if: always()
               with:
                   type: ${{ job.status }}
-                  job_name: "*Deploy*"
+                  job_name: "*Sandbox Tests*"
                   url: ${{ secrets.SLACK_WEBHOOK }}
                   commit: true
                   token: ${{ secrets.GITHUB_TOKEN }}
