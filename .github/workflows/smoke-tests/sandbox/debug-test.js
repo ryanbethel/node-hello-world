@@ -13,7 +13,7 @@ test("start", async (t) => {
 
 test("Sanity Test", async (t) => {
     t.plan(1);
-    t.ok(true, "Sanity Test");
+    t.ok(false, "Sanity Test");
 });
 
 // this ends sandbox
