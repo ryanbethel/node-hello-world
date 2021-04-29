@@ -47,6 +47,9 @@ jobs:
             - name: Install Architect
               run: npm i @architect/architect
 
+            - name: Install Test Dependencies
+              run: npm i tape tap-spec tiny-json-http
+
             - name: Hydrate
               run: npx arc hydrate
               env:
@@ -55,11 +58,8 @@ jobs:
                   CI: true
                   ARC_MAX_NPM: 10
 
-            - name: Install Test Dependencies
-              run: npm i tape tap-spec tiny-json-http
-
             - name: Run Sandbox Tests
-              run: "QUIET=1 tape .github/workflows/smoke-tests/sandbox/**-test.js | tap-spec"
+              run: QUIET=1 tape ./.github/workflows/smoke-tests/sandbox/**-test.js | tap-spec
               
             - name: Notify
               uses: homoluctus/slatify@master
