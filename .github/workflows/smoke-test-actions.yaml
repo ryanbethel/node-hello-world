@@ -1,4 +1,4 @@
-name: Node CI
+name: Smoke Test
 
 # Push tests commits; pull_request tests PR merges
 on: [push, pull_request]
