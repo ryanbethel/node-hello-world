@@ -11,50 +11,64 @@ jobs:
         strategy:
             matrix:
                 node-version: [10.x]
+        # steps:
+        # - name: Notify
+        #   uses: homoluctus/slatify@master
+        #   if: always()
+        #   with:
+        #         type: ${{ job.status }}
+        #         job_name: "*Deploy*"
+        #         url: ${{ secrets.SLACK_WEBHOOK }}
+        #         commit: true
+        #         token: ${{ secrets.GITHUB_TOKEN }}
+
+
+        # Go
         steps:
-        - name: Notify
-          uses: homoluctus/slatify@master
-          if: always()
-          with:
-                type: ${{ job.status }}
-                job_name: "*Deploy*"
-                url: ${{ secrets.SLACK_WEBHOOK }}
-                commit: true
-                token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Check out repo
+              uses: actions/checkout@v1
 
+            - name: Set up Node.js
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
 
-    #     # Go
-    #     steps:
-    #         - name: Check out repo
-    #           uses: actions/checkout@v1
+            - name: Env
+              run: |
+                  echo "Event name: ${{ github.event_name }}"
+                  echo "Git ref:    ${{ github.ref }}"
+                  echo "GH actor:   ${{ github.actor }}"
+                  echo "SHA:        ${{ github.sha }}"
+                  VER=`node --version`; echo "Node ver:   $VER"
+                  VER=`npm --version`; echo "npm ver:    $VER"
+            - name: Install
+              run: npm install
 
-    #         - name: Set up Node.js
-    #           uses: actions/setup-node@v1
-    #           with:
-    #               node-version: ${{ matrix.node-version }}
+            - name: Hydrate
+              run: npx arc hydrate
+              env:
+                  AWS_ACCESS_KEY_ID: "foo"
+                  AWS_SECRET_ACCESS_KEY: "bar"
+                  CI: true
+                  ARC_MAX_NPM: 10
 
-    #         - name: Env
-    #           run: |
-    #               echo "Event name: ${{ github.event_name }}"
-    #               echo "Git ref:    ${{ github.ref }}"
-    #               echo "GH actor:   ${{ github.actor }}"
-    #               echo "SHA:        ${{ github.sha }}"
-    #               VER=`node --version`; echo "Node ver:   $VER"
-    #               VER=`npm --version`; echo "npm ver:    $VER"
-    #         - name: Install
-    #           run: npm install
+            - name: Install Test Dependencies
+              run: npm i tape tap-spec tiny-json-http
 
-    #         - name: Hydrate
-    #           run: npx hydrate
-    #           env:
-    #               AWS_ACCESS_KEY_ID: "foo"
-    #               AWS_SECRET_ACCESS_KEY: "bar"
-    #               CI: true
-    #               ARC_MAX_NPM: 10
+            - name: Run Sandbox Tests
+              run: "QUIET=1 tape .github/workflows/smoke-tests/sandbox/**-test.js | tap-spec"
+              
+            - name: Notify
+              uses: homoluctus/slatify@master
+              if: always()
+              with:
+                  type: ${{ job.status }}
+                  job_name: "*Deploy*"
+                  url: ${{ secrets.SLACK_WEBHOOK }}
+                  commit: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
-    #         # Can be deleted soon (pending Arc creds refactor)
-    #         # - name: Create ~/.aws/credentials
-    #         #   run: mkdir $HOME/.aws && printf "[smallwins]\naws_access_key_id=foo\naws_secret_access_key=bar\nregion=us-west-1\n" > $HOME/.aws/credentials && cat $HOME/.aws/credentials
+           
 
     #         - name: Test
     #           run: npm test
